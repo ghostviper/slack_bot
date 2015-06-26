@@ -48,7 +48,7 @@ def test(data):
         or ATTRACTIONS_REGEX.search(data['message'])
 
 
-def handle(data, app=None, **kwargs):
+def handle(data, **kwargs):
     if app is None:
         ak = '18691b8e4206238f331ad2e1ca88357e'
     else:

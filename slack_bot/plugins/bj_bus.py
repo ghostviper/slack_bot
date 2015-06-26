@@ -266,4 +266,4 @@ if __name__ == '__main__':
     #    print(handle({'message': '公交 571'}, None, None, None))
     #    print(handle({'message': '公交 571 sd'}, None, None, None))
     #    print(get_busline_info(847))
-    print(handle({'message': '公交 571 42'}, None, None))
+    print(handle({'message': '公交 571 42'}))

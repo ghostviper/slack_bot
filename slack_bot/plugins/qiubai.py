@@ -42,7 +42,7 @@ def test(data):
     return any(w in data['message'] for w in ['糗百', '笑话'])
 
 
-def handle(data, cache=None, **kwargs):
+def handle(data, **kwargs):
     if cache is not None:
         r = cache.get(key)
         if r:

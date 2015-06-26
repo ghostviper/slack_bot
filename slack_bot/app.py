@@ -1,9 +1,9 @@
 # coding=utf-8
 import os
 import re
-from functools import partial
+import importlib
 
-from flask import Flask
+from flask import Flask, current_app
 
 from flask_slackbot import SlackBot
 
@@ -15,8 +15,9 @@ from plugins.utils import convert2str, replaced
 
 plugin_modules = []
 for plugin_name in plugins.__all__:
-    __import__('slack_bot.plugins.%s' % plugin_name)
-    plugin_modules.append(getattr(plugins, plugin_name))
+    mod = importlib.import_module('slack_bot.plugins.%s' % plugin_name)
+    mod.__dict__.update({'app': current_app, 'cache': cache})
+    plugin_modules.append(mod)
 
 
 def create_app(config=None):
@@ -33,14 +34,13 @@ def create_app(config=None):
     app.plugin_modules = plugin_modules
 
     slackbot = SlackBot(app)
-    _callback = partial(callback, app=app)
-    slackbot.set_handler(_callback)
+    slackbot.set_handler(callback)
     slackbot.filter_outgoing(_filter)
 
     return app
 
 
-def callback(kwargs, app):
+def callback(kwargs):
     s = convert2str(kwargs['text'])
     trigger_word = convert2str(kwargs['trigger_word'])
     # remove trigger_words
@@ -59,7 +59,7 @@ def callback(kwargs, app):
 
     for plugin_module in plugin_modules:
         if plugin_module.test(data):
-            ret = plugin_module.handle(data, cache=cache, app=app)
+            ret = plugin_module.handle(data)
             if not isinstance(ret, tuple):
                 text = ret
                 attaches = None

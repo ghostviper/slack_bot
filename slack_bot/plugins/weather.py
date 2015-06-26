@@ -31,7 +31,7 @@ def test(data):
     return '天气' in data['message'] and get_city(data)
 
 
-def handle(data, app=None, **kwargs):
+def handle(data, **kwargs):
     if app is None:
         ak = '18691b8e4206238f331ad2e1ca88357e'
     else:
@@ -61,6 +61,6 @@ def handle(data, app=None, **kwargs):
 
 
 if __name__ == '__main__':
-    print test({'message': '天气怎么样'}, None)
-    print test({'message': '北京天气怎么样'}, None)
-    print handle({'message': '北京天气怎么样'}, None)
+    print test({'message': '天气怎么样'})
+    print test({'message': '北京天气怎么样'})
+    print handle({'message': '北京天气怎么样'})

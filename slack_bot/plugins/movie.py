@@ -17,7 +17,7 @@ CURRENT_URL = 'http://movie.douban.com/nowplaying/{0}/'
 LATER_URL = 'http://movie.douban.com/later/{0}/'
 
 
-def get_later_movie_info(city, app):
+def get_later_movie_info(city):
     r = requests.get(LATER_URL.format(city))
     soup = BeautifulSoup(r.text)
     items = soup.find(id='showing-soon').findAll('div', {'item'})
@@ -28,13 +28,13 @@ def get_later_movie_info(city, app):
         content = '|'.join([li.text for li in i.findAll('li')[:4]])
         image_url = i.find('a').find('img').attrs.get('src', '')
         # SA好变态, 感觉是防盗链了，下同
-        image_url = upload_image(image_url, 'thumb', app)
+        image_url = upload_image(image_url, 'thumb')
         yield u'<{url}|{title}> {content}'.format(**locals()), gen_attachment(
             content, image_url, image_type='thumb', title=title,
             title_link=url)
 
 
-def get_current_movie_info(city, app):
+def get_current_movie_info(city):
     r = requests.get(CURRENT_URL.format(city))
     soup = BeautifulSoup(r.text)
     items = soup.find(id='nowplaying').find('ul', {'class': 'lists'}).findAll(
@@ -48,7 +48,7 @@ def get_current_movie_info(city, app):
         content = '|'.join([li.text for li in i.findAll('li')[:4]])
         url = i.find('a').attrs.get('href', '')
         image_url = img.attrs.get('src', '')
-        image_url = upload_image(image_url, 'thumb', app)
+        image_url = upload_image(image_url, 'thumb')
         count += 1
         yield u'<{url}|{title}>'.format(**locals()), gen_attachment(
             content, image_url, image_type='thumb', title=title,
@@ -73,10 +73,10 @@ def handle(data, app, **kwargs):
         fn = get_later_movie_info
     else:
         fn = get_current_movie_info
-    ret = [r for r in fn(city, app)]
+    ret = [r for r in fn(city)]
     return '\n'.join([r[0] for r in ret]), [r[1] for r in ret]
 
 
 if __name__ == '__main__':
-    print handle({'message': '最近要将上映的电影'}, None, None)
-    print handle({'message': '有什么电影 上海'}, None, None)
+    print handle({'message': '最近要将上映的电影'})
+    print handle({'message': '有什么电影 上海'})

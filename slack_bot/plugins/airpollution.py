@@ -52,7 +52,7 @@ def test(data):
     return len(req) > 0
 
 
-def get_desc(cityname, cityshort, cache=None, app=None):
+def get_desc(cityname, cityshort):
     if cache is not None:
         r = cache.get('airpollution.%s' % (cityshort))
         if r:
@@ -82,12 +82,12 @@ def get_desc(cityname, cityshort, cache=None, app=None):
     return text, attaches
 
 
-def handle(data, cache=None, app=None, **kwargs):
+def handle(data, **kwargs):
     message = data['message']
     reqs = filter(lambda p: p[0].encode('utf-8') in message, city)
     req = reqs[0]
     try:
-        return get_desc(req[0], req[1], cache, app=app)
+        return get_desc(req[0], req[1])
     except Exception as e:
         print 'Error: {}'.format(e)
     return '空气查询失败, 请重试!', []
